@@ -34,5 +34,7 @@ jobs:
         run: poetry install
         working-directory: ${{ github.workspace }}/tools
       - name: Run script
-        run: python -m billing_project
+        run: |
+          source .venv/bin/activate
+          python -m billing_project
         working-directory: ${{ github.workspace }}/tools
