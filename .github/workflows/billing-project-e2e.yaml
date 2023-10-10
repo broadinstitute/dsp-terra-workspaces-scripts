@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-dir: ./tools
+        working-directory: ./tools
     steps:
       - uses: actions/checkout@v2
       - name: Set up python
