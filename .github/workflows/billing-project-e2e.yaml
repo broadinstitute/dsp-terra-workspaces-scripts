@@ -7,6 +7,9 @@ on:
 jobs:
   main-ci:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-dir: ./tools
     steps:
       - uses: actions/checkout@v2
       - name: Set up python
@@ -18,21 +21,23 @@ jobs:
         uses: snok/install-poetry@v1.2
         with:
           version: 1.6.1
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-poetry-v2
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
         with:
-          path: ~/.cache/pypoetry
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./tools/pyproject.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      #----------------------------------------------
+      # install dependencies if cache does not exist
+      #----------------------------------------------
       - name: Install dependencies
-        id: dependencies
-        run: poetry install
-        working-directory: ${{ github.workspace }}/tools
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+      - name: Install project
+        run: poetry install --no-interaction
       - name: Run script
         run: |
           source .venv/bin/activate
