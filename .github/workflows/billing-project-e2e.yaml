@@ -12,6 +12,13 @@ jobs:
         working-directory: ./tools
     steps:
       - uses: actions/checkout@v2
+      #----------------------------------------------
+      #  -----  login w/azure  -----
+      #----------------------------------------------
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Set up python
         id: setup-python
         uses: actions/setup-python@v4
