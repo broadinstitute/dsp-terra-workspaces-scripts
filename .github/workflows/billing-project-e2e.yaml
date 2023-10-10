@@ -35,3 +35,4 @@ jobs:
         working-directory: ${{ github.workspace }}/tools
       - name: Run script
         run: python -m billing_project
+        working-directory: ${{ github.workspace }}/tools
