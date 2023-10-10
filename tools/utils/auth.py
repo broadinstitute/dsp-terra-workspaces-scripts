@@ -11,6 +11,8 @@ logger = logging.getLogger("azure")
 # Set the desired logging level
 logger.setLevel(logging.WARN)
 
+USER_TOKEN = None
+
 
 def get_azure_access_token() -> AccessToken:
     token_credential = DefaultAzureCredential()
@@ -18,6 +20,10 @@ def get_azure_access_token() -> AccessToken:
 
 
 def get_gcp_token():
+    if USER_TOKEN:
+        logger.info("Returning provided user token instead of using ADC credentials...")
+        return USER_TOKEN
+
     DEFAULT_SCOPES = [
         "openid",
         "email",

@@ -2,7 +2,7 @@ import logging
 import sys
 import time
 
-logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s", stream=sys.stdout)
 
 
 def poll_predicate(

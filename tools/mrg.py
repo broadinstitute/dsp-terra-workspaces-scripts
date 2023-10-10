@@ -12,7 +12,7 @@ import requests
 from utils import auth, poll, cli
 from utils.conf import Configuration
 
-logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s", stream=sys.stdout)
 
 MRG_NOT_READY_STATES = ["Accepted", "Creating"]
 MRG_FAILED_STATES = ["Failed", "Deleted", "Deleting"]
@@ -20,12 +20,12 @@ MRG_READY_STATES = ["Succeeded", "Running", "Ready"]
 
 
 def deploy_managed_application(
-    subscription_id: str,
-    deployment_name: str,
-    resource_group: str,
-    authorized_terra_users: list[str],
-    plan: str,
-    location: str = "southcentralus",
+        subscription_id: str,
+        deployment_name: str,
+        resource_group: str,
+        authorized_terra_users: list[str],
+        plan: str,
+        location: str = "southcentralus",
 ):
     access_token = auth.get_azure_access_token()
     body = {
@@ -74,6 +74,31 @@ def deploy_managed_application(
     return result.json()
 
 
+def delete_managed_application(subscription_id: str, deployment_name: str, resource_group: str):
+    access_token = auth.get_azure_access_token()
+    url = f"https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Solutions/applications/{deployment_name}?api-version=2019-07-01"
+    headers = {
+        "content-type": "application/json",
+        "Authorization": f"Bearer {access_token.token}",
+    }
+    logging.info(
+        f"Deleting MRG [subscription={subscription_id}, resource_group={resource_group}, deployment_name={deployment_name}]"
+    )
+
+    result = requests.delete(url, headers=headers)
+    result.raise_for_status()
+
+    logging.info("Deletion complete")
+
+
+def _delete_mrg_cmd(args):
+    delete_managed_application(
+        args.subscription_id,
+        args.deployment_name,
+        args.resource_group
+    )
+
+
 def _mrg_cmd(args):
     result = deploy_managed_application(
         args.subscription_id,
@@ -94,12 +119,21 @@ if __name__ == "__main__":
         "-e", "--env", choices=Configuration.get_environments(), required=True
     )
     parser.add_argument("-b", "--bee", required=False)
-    parser.add_argument("-d", "--deployment_name", required=True)
-    parser.add_argument("-s", "--subscription_id", required=True)
-    parser.add_argument("-r", "--resource_group", required=True)
-    parser.add_argument("-u", "--users", nargs="+", required=True)
-    parser.add_argument("-l", "--location", required=False, default="southcentralus")
-    parser.set_defaults(func=_mrg_cmd)
+    subparsers = parser.add_subparsers()
+
+    create_subparser = subparsers.add_parser("create")
+    create_subparser.add_argument("-d", "--deployment_name", required=True)
+    create_subparser.add_argument("-s", "--subscription_id", required=True)
+    create_subparser.add_argument("-r", "--resource_group", required=True)
+    create_subparser.add_argument("-u", "--users", nargs="+", required=True)
+    create_subparser.add_argument("-l", "--location", required=False, default="southcentralus")
+    create_subparser.set_defaults(func=_mrg_cmd)
+
+    delete_subparser = subparsers.add_parser("delete")
+    delete_subparser.add_argument("-d", "--deployment_name", required=True)
+    delete_subparser.add_argument("-s", "--subscription_id", required=True)
+    delete_subparser.add_argument("-r", "--resource_group", required=True)
+    delete_subparser.set_defaults(func=_delete_mrg_cmd)
 
     args = cli.parse_args_and_init_config(parser)
 
