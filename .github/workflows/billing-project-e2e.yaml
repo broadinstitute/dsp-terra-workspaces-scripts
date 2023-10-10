@@ -46,7 +46,10 @@ jobs:
       # install your root project, if required
       #----------------------------------------------
       - name: Install project
-        run: poetry install --no-interactionZ
+        run: poetry install --no-interaction
+      #----------------------------------------------
+      # run the script
+      #----------------------------------------------
       - name: Run script
         run: |
           source .venv/bin/activate
