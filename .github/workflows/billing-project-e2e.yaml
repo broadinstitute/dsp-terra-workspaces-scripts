@@ -28,6 +28,14 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       #----------------------------------------------
+      #  -----  login w/google  -----
+      #----------------------------------------------
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.DEV_GCLOUD_KEY }}'
+
+      #----------------------------------------------
       #  -----  install & configure poetry  -----
       #----------------------------------------------
       - name: Set up python
@@ -71,3 +79,4 @@ jobs:
         run: |
           source .venv/bin/activate
           python -m mrg -e dev -d testing1 -s $AZURE_SUBSCRIPTION_ID -r billing-project-testing -u hermione.owner@quality.firecloud.org
+
