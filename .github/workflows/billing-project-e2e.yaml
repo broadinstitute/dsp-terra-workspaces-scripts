@@ -37,10 +37,9 @@ jobs:
         id: gcloud-auth
         uses: google-github-actions/auth@v1
         with:
+          access_token_scopes: 'profile, email, openid'
           credentials_json: ${{ secrets.DEV_GCLOUD_KEY }}
-
-      - name: Set up gcloud SDK
-        uses: google-github-actions/setup-gcloud@v1
+          access_token_subject: hermione.owner@quality.firecloud.org
 
       #----------------------------------------------
       #  -----  install & configure poetry  -----
@@ -76,7 +75,7 @@ jobs:
       # install your root project, if required
       #----------------------------------------------
       - name: Install project
-        run: poetry install --no-interaction
+        run: poetry install --no-interaction --only main
       #----------------------------------------------
       # run the script
       #----------------------------------------------
@@ -86,5 +85,4 @@ jobs:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         run: |
           source .venv/bin/activate
-          python -m mrg -e dev -d $MRG_ID -s $AZURE_SUBSCRIPTION_ID -r billing-project-testing -u monster.aherbst.dev@gmail.com
           python -m billing_profiles -e dev mrg -s $AZURE_SUBSCRIPTION_ID 
