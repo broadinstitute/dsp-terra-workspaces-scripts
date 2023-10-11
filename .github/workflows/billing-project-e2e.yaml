@@ -23,7 +23,7 @@ jobs:
       #----------------------------------------------
       #  -----  login w/azure  -----
       #----------------------------------------------
-      - name: Az CLI login
+      - name: Azure CLI login
         uses: azure/login@v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -33,10 +33,16 @@ jobs:
       #----------------------------------------------
       #  -----  login w/google  -----
       #----------------------------------------------
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v1'
+      - name: gcloud CLI login
+        id: gcloud-auth
+        uses: google-github-actions/auth@v1
         with:
-          credentials_json: '${{ secrets.DEV_GCLOUD_KEY }}'
+          credentials_json: ${{ secrets.DEV_GCLOUD_KEY }}
+
+      - name: Set up gcloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          export_default_credentials: true
 
       #----------------------------------------------
       #  -----  install & configure poetry  -----
@@ -67,7 +73,7 @@ jobs:
       #----------------------------------------------
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
+        run: poetry install --no-interaction --no-root --no-dev
       #----------------------------------------------
       # install your root project, if required
       #----------------------------------------------
