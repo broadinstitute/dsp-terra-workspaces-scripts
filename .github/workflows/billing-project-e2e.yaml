@@ -15,18 +15,25 @@ jobs:
       #----------------------------------------------
       #  -----  login w/azure  -----
       #----------------------------------------------
-      - name: Azure Login
+      - name: Az CLI login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Run Azure CLI commands
+        run: |
+          az account show
+          az group list
+          pwd
+      #----------------------------------------------
+      #  -----  install & configure poetry  -----
+      #----------------------------------------------
       - name: Set up python
         id: setup-python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      #----------------------------------------------
-      #  -----  install & configure poetry  -----
-      #----------------------------------------------
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
