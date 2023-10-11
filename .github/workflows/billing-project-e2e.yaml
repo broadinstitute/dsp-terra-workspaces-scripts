@@ -12,6 +12,8 @@ jobs:
   main-ci:
     runs-on: ubuntu-latest
     environment: dev
+    env:
+      MRG_ID: billing-testing-${{ github.run_id }}-${{ github.run_attempt }}
     defaults:
       run:
         working-directory: ./tools
@@ -76,7 +78,8 @@ jobs:
       - name: Run script
         env:
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          MRG_ID: ${{ MRG_ID }}
         run: |
           source .venv/bin/activate
-          python -m mrg -e dev -d testing1 -s $AZURE_SUBSCRIPTION_ID -r billing-project-testing -u hermione.owner@quality.firecloud.org
+          python -m mrg -e dev -d $MRG_ID -s $AZURE_SUBSCRIPTION_ID -r billing-project-testing -u hermione.owner@quality.firecloud.org
 
