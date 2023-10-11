@@ -38,6 +38,7 @@ jobs:
         id: gcloud-auth
         uses: google-github-actions/auth@v1
         with:
+          service_account: firecloud-qa@broad-dsde-qa.iam.gserviceaccount.com
           access_token_scopes: 'profile, email, openid'
           credentials_json: ${{ secrets.DEV_GCLOUD_KEY }}
           access_token_subject: hermione.owner@quality.firecloud.org
