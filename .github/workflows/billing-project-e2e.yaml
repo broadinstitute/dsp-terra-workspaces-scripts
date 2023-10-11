@@ -66,6 +66,8 @@ jobs:
       # run the script
       #----------------------------------------------
       - name: Run script
+        env:
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         run: |
           source .venv/bin/activate
-          python -m mrg
+          python -m mrg -e dev -d testing1 -s $AZURE_SUBSCRIPTION_ID -r billing-project-testing -u hermione.owner@quality.firecloud.org
