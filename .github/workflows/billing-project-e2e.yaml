@@ -86,4 +86,5 @@ jobs:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         run: |
           source .venv/bin/activate
+          python -m mrg -e dev create -d $MRG_ID -s $AZURE_SUBSCRIPTION_ID -r billing-project-testing -u monster.aherbst.dev@gmail.com
           python -m billing_profiles -e dev mrg -s $AZURE_SUBSCRIPTION_ID 
