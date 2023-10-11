@@ -79,7 +79,7 @@ jobs:
       - name: Run script
         env:
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         run: |
           source .venv/bin/activate
-          python -m mrg -e dev -d $MRG_ID -s $AZURE_SUBSCRIPTION_ID -r billing-project-testing -u hermione.owner@quality.firecloud.org
-
+          python -m billing_project -e dev create -s $AZURE_SUBSCRIPTION_ID -r billing-project-testing -u monster.aherbst.dev@gmail.com -t $AZURE_TENANT_ID -bp $MRG_ID
