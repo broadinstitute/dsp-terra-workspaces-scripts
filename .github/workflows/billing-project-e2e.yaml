@@ -41,8 +41,6 @@ jobs:
 
       - name: Set up gcloud SDK
         uses: google-github-actions/setup-gcloud@v1
-        with:
-          export_default_credentials: true
 
       #----------------------------------------------
       #  -----  install & configure poetry  -----
@@ -88,4 +86,4 @@ jobs:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         run: |
           source .venv/bin/activate
-          python -m billing_project -e dev create -s $AZURE_SUBSCRIPTION_ID -r billing-project-testing -u monster.aherbst.dev@gmail.com -t $AZURE_TENANT_ID -bp $MRG_ID
+          python -m billing_profiles -e dev mrg -s $AZURE_SUBSCRIPTION_ID 
