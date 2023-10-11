@@ -4,9 +4,14 @@ on:
     branches:
       - arh-testing
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   main-ci:
     runs-on: ubuntu-latest
+    environment: dev
     defaults:
       run:
         working-directory: ./tools
