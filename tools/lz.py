@@ -8,13 +8,12 @@ import random
 import string
 import requests
 
-
 from billing_profiles import list_managed_apps, create_billing_profile
 from mrg import deploy_managed_application
 from utils import auth, poll, cli
 from utils.conf import Configuration
 
-logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s", stream=sys.stdout)
 
 DEFINITIONS = {
     "standard": "CromwellBaseResourcesFactory",
@@ -84,12 +83,12 @@ def id_generator(size=6, chars=string.ascii_lowercase + string.digits):
 
 
 def create_lz_e2e(
-    subscription_id: str,
-    resource_group: str,
-    authed_user: str,
-    env: str,
-    definition: str,
-    lz_prefix: str = "test",
+        subscription_id: str,
+        resource_group: str,
+        authed_user: str,
+        env: str,
+        definition: str,
+        lz_prefix: str = "test",
 ):
     bpm_host = Configuration.get_config()["bpm_host"]
     lz_host = Configuration.get_config()["lz_host"]
@@ -196,6 +195,8 @@ if __name__ == "__main__":
         "-e", "--env", choices=Configuration.get_environments(), required=True
     )
     parser.add_argument("-b", "--bee", required=False)
+    parser.add_argument("-u", "--user_token", required=False)
+
     subparsers = parser.add_subparsers()
     subparsers.required = True
 

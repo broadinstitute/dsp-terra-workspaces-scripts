@@ -1,10 +1,11 @@
 import argparse
 
+from utils import auth
 from utils.conf import TerraEnvs, Configuration
 
 
 def parse_args_and_init_config(
-    parser: argparse.ArgumentParser,
+        parser: argparse.ArgumentParser,
 ) -> (dict, argparse.ArgumentParser):
     """
     Parses args and initializes config from the supplied argument parser. Assumes
@@ -16,6 +17,9 @@ def parse_args_and_init_config(
     subs = {}
 
     args = parser.parse_args()
+
+    if 'user_token' in args and args.user_token is not None:
+        auth.USER_TOKEN = args.user_token
 
     if args.env == TerraEnvs.BEE and args.bee is None:
         parser.error("BEE name is required when env is BEE")

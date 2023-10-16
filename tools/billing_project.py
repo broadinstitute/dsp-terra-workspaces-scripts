@@ -13,7 +13,7 @@ import mrg
 from utils import auth, poll, cli
 from utils.conf import Configuration
 
-logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s", stream=sys.stdout)
 
 
 def create_billing_project(
@@ -69,7 +69,7 @@ def create_billing_project(
         else:
             raise Exception(f"Error creating billing project => {status}")
 
-    poll.poll_predicate("Billing project creation", 1200, 5, bp_poller)
+    poll.poll_predicate("Billing project creation", 1800, 5, bp_poller)
 
 
 def list_billing_projects():
@@ -148,6 +148,7 @@ if __name__ == "__main__":
         "-e", "--env", choices=Configuration.get_environments(), required=True
     )
     parser.add_argument("-b", "--bee", required=False)
+    parser.add_argument("-u", "--user_token", required=False)
 
     subparsers = parser.add_subparsers()
     subparsers.required = True

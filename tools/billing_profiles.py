@@ -9,7 +9,7 @@ from utils import auth, cli
 from utils.conf import Configuration
 import uuid
 
-logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s", stream=sys.stdout)
 
 
 def list_managed_apps(host: str, subscription_id: str):
@@ -80,6 +80,7 @@ if __name__ == "__main__":
         "-e", "--env", choices=Configuration.get_environments(), required=True
     )
     parser.add_argument("-b", "--bee", required=False)
+    parser.add_argument("-u", "--user_token", required=False)
     subparsers = parser.add_subparsers()
     subparsers.required = True
 
