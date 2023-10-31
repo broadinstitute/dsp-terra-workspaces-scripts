@@ -4,6 +4,17 @@ from utils import auth
 from utils.conf import TerraEnvs, Configuration
 
 
+def setup_parser_terra_env_args(parser: argparse.ArgumentParser):
+    """
+    Add a case-insensitive, bee-aware terra environment arg
+    """
+
+    parser.add_argument(
+        "-e", "--env", choices=Configuration.get_environments(), required=True, type=str.lower
+    )
+    parser.add_argument("-b", "--bee", required=False)
+
+
 def parse_args_and_init_config(
         parser: argparse.ArgumentParser,
 ) -> (dict, argparse.ArgumentParser):

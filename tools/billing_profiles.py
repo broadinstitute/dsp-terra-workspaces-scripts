@@ -76,11 +76,8 @@ def _bpm_create_cmd(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "-e", "--env", choices=Configuration.get_environments(), required=True
-    )
-    parser.add_argument("-b", "--bee", required=False)
     parser.add_argument("-u", "--user_token", required=False)
+
     subparsers = parser.add_subparsers()
     subparsers.required = True
 
@@ -94,6 +91,7 @@ if __name__ == "__main__":
     create_subparser.add_argument("-m", "--mrg_id", required=True)
     create_subparser.add_argument("-t", "--tenant_id", required=True)
 
+    cli.setup_parser_terra_env_args(parser)
     args = cli.parse_args_and_init_config(parser)
 
     args.func(args)
