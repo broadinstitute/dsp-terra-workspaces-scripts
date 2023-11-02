@@ -191,10 +191,6 @@ def _verify_lz_definition(definition: str):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "-e", "--env", choices=Configuration.get_environments(), required=True
-    )
-    parser.add_argument("-b", "--bee", required=False)
     parser.add_argument("-u", "--user_token", required=False)
 
     subparsers = parser.add_subparsers()
@@ -217,6 +213,7 @@ if __name__ == "__main__":
     e2e_subparser.add_argument("-p", "--lz_prefix", required=False, default="test")
     e2e_subparser.set_defaults(func=_e2e_cmd)
 
+    cli.setup_parser_terra_env_args(parser)
     args = cli.parse_args_and_init_config(parser)
 
     args.func(args)

@@ -144,10 +144,6 @@ def _list_billing_projects_cmd(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "-e", "--env", choices=Configuration.get_environments(), required=True
-    )
-    parser.add_argument("-b", "--bee", required=False)
     parser.add_argument("-u", "--user_token", required=False)
 
     subparsers = parser.add_subparsers()
@@ -171,6 +167,7 @@ if __name__ == "__main__":
     list_subparser = subparsers.add_parser("list")
     list_subparser.set_defaults(func=_list_billing_projects_cmd)
 
+    cli.setup_parser_terra_env_args(parser)
     args = cli.parse_args_and_init_config(parser)
 
     args.func(args)

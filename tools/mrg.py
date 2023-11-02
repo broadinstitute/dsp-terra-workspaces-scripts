@@ -114,11 +114,6 @@ def _mrg_cmd(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-
-    parser.add_argument(
-        "-e", "--env", choices=Configuration.get_environments(), required=True
-    )
-    parser.add_argument("-b", "--bee", required=False)
     subparsers = parser.add_subparsers()
 
     create_subparser = subparsers.add_parser("create")
@@ -135,6 +130,7 @@ if __name__ == "__main__":
     delete_subparser.add_argument("-r", "--resource_group", required=True)
     delete_subparser.set_defaults(func=_delete_mrg_cmd)
 
+    cli.setup_parser_terra_env_args(parser)
     args = cli.parse_args_and_init_config(parser)
 
     args.func(args)
