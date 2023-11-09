@@ -7,6 +7,8 @@ import uuid
 import random
 import string
 import requests
+from tabulate import tabulate
+from azure.mgmt.resource import ResourceManagementClient
 
 from billing_profiles import list_managed_apps, create_billing_profile
 from mrg import deploy_managed_application
@@ -22,6 +24,13 @@ DEFINITIONS = {
 
 
 def create_landing_zone(lz_host: str, billing_profile_id: str, definition: str):
+    """
+    Creates a landing zone, calling the LZ APIs against the supplied host and
+    deploying the resources into the Azure managed application from the supplied billing profile.
+    :param lz_host: Hostname of the LZ API
+    :param billing_profile_id: ID of the billing profile which will hold the landing zone resources
+    :param definition:  Type of landing zone to deploy, must be one of DEFINITIONS
+    """
     postgres_credentials = _read_postgres_credentials()
 
     body = {
@@ -155,6 +164,47 @@ def _read_postgres_credentials():
     return json.loads(read_credentials_process.stdout)["data"]
 
 
+def inspect_lz(subscription_id: str, managed_resource_group_id: str):
+    """
+    Inspects the contents of a landing zone at the supplied Azure coordinates. Uses the default azure credential
+    from the environment. For local dev usage, this is usually setup by invoking `az login` and logging in as
+    an identity that is authorized to access the given MRG.
+    :param subscription_id: Subscription in which the landing zone resides
+    :param managed_resource_group_id: Managed resource group containing the Terra deployment
+    :return: List of azure resources in the MRG
+    """
+    logging.info(
+        f"Inspecting lz at coordinates [subscription_id={subscription_id}, managed_resource_group_id={managed_resource_group_id}]"
+    )
+    cred = auth.get_azure_credential()
+    resource_client = ResourceManagementClient(cred, subscription_id)
+
+    resource_list = resource_client.resources.list_by_resource_group(
+        managed_resource_group_id, expand="createdTime,changedTime"
+    )
+    return resource_list
+
+
+def _render_resource_list(resource_list: list, output_format="csv"):
+    objs = [
+        {"Name": r.name, "Type": r.type, "Created Time": r.created_time}
+        for r in resource_list
+    ]
+    if "pretty" == output_format:
+        logging.info(tabulate(objs, headers="keys"))
+    else:
+        output = io.StringIO()
+        writer = csv.DictWriter(output, fieldnames=objs[0].keys())
+        writer.writeheader()
+        writer.writerows(objs)
+        logging.info(output.getvalue())
+
+
+def _inspect_cmd(args):
+    resources = inspect_lz(args.subscription_id, args.managed_resource_group_id)
+    _render_resource_list(resources, args.output_format)
+
+
 def _create_job_status_cmd(args):
     create_job_status(Configuration.get_config()["lz_host"], args.job_id)
 
@@ -212,6 +262,14 @@ if __name__ == "__main__":
     e2e_subparser.add_argument("-d", "--definition", required=True)
     e2e_subparser.add_argument("-p", "--lz_prefix", required=False, default="test")
     e2e_subparser.set_defaults(func=_e2e_cmd)
+
+    inspect_subparser = subparsers.add_parser("inspect")
+    inspect_subparser.add_argument("-s", "--subscription_id", required=True)
+    inspect_subparser.add_argument("-m", "--managed_resource_group_id", required=True)
+    inspect_subparser.add_argument(
+        "-o", "--output_format", default="pretty", required=False
+    )
+    inspect_subparser.set_defaults(func=_inspect_cmd)
 
     cli.setup_parser_terra_env_args(parser)
     args = cli.parse_args_and_init_config(parser)
