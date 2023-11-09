@@ -31,7 +31,6 @@ def create_landing_zone(lz_host: str, billing_profile_id: str, definition: str):
     :param billing_profile_id: ID of the billing profile which will hold the landing zone resources
     :param definition:  Type of landing zone to deploy, must be one of DEFINITIONS
     """
-    postgres_credentials = _read_postgres_credentials()
 
     body = {
         "landingZoneId": f"{uuid.uuid4()}",
@@ -43,14 +42,6 @@ def create_landing_zone(lz_host: str, billing_profile_id: str, definition: str):
             {"key": "BATCH_SUBNET", "value": "10.1.4.0/22"},
             {"key": "POSTGRESQL_SUBNET", "value": "10.1.8.0/22"},
             {"key": "COMPUTE_SUBNET", "value": "10.1.12.0/22"},
-            {
-                "key": "POSTGRES_DB_ADMIN",
-                "value": postgres_credentials["username"],
-            },
-            {
-                "key": "POSTGRES_DB_PASSWORD",
-                "value": postgres_credentials["password"],
-            },
             {"key": "AKS_AUTOSCALING_ENABLED", "value": "true"},
             {"key": "AKS_AUTOSCALING_MIN", "value": "1"},
             {"key": "AKS_AUTOSCALING_MAX", "value": "100"},
@@ -146,22 +137,6 @@ def create_lz_e2e(
     poll.poll_predicate("landing zone creation", 1200, 5, lz_poller)
 
     logging.info(f"Created landing zone")
-
-
-def _read_postgres_credentials():
-    vault_path = Configuration.get_config()["lz_postgres_credentials_vault_path"]
-    read_credentials_process = subprocess.run(
-        f"vault read -format=json {vault_path}".split(" "), capture_output=True
-    )
-    if read_credentials_process.returncode != 0:
-        print(
-            "Unable to read postgres credentials.\nExit code: {}.\nStderr: {}".format(
-                read_credentials_process.returncode, read_credentials_process.stderr
-            )
-        )
-        sys.exit(1)
-
-    return json.loads(read_credentials_process.stdout)["data"]
 
 
 def inspect_lz(subscription_id: str, managed_resource_group_id: str):
