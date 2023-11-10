@@ -11,10 +11,15 @@ requests = "^2.31.0"
 azure-core = "^1.27.0"
 azure-identity = "^1.14.0"
 google-auth = "^2.19.1"
+azure-mgmt-resource = "^23.0.1"
+tabulate = "^0.9.0"
 
 [tool.poetry.group.dev.dependencies]
 black = {extras = ["d"], version = "^23.3.0"}
 pdbpp = "^0.10.3"
+mypy = "^1.7.0"
+types-requests = "^2.31.0.10"
+types-tabulate = "^0.9.0.3"
 
 [build-system]
 requires = ["poetry-core"]

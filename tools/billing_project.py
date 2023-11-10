@@ -1,5 +1,5 @@
 """
-Simple tool for working with Rawls Azure billing projects
+Utility for working with Rawls Azure billing projects
 """
 
 import argparse
@@ -13,7 +13,9 @@ import mrg
 from utils import auth, poll, cli
 from utils.conf import Configuration
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s", stream=sys.stdout)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(message)s", stream=sys.stdout
+)
 
 
 def create_billing_project(

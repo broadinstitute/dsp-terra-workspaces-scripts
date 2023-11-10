@@ -1,3 +1,7 @@
+"""
+Utility for working with Terra Billing Profiles
+"""
+
 import argparse
 import json
 import logging
@@ -9,7 +13,9 @@ from utils import auth, cli
 from utils.conf import Configuration
 import uuid
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s", stream=sys.stdout)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(message)s", stream=sys.stdout
+)
 
 
 def list_managed_apps(host: str, subscription_id: str):

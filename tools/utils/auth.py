@@ -1,6 +1,6 @@
 import logging
 
-from azure.core.credentials import AccessToken
+from azure.core.credentials import AccessToken, TokenCredential
 from azure.identity import DefaultAzureCredential
 
 import google.auth
@@ -17,6 +17,10 @@ USER_TOKEN = None
 def get_azure_access_token() -> AccessToken:
     token_credential = DefaultAzureCredential()
     return token_credential.get_token("https://management.core.windows.net/.default")
+
+
+def get_azure_credential() -> TokenCredential:
+    return DefaultAzureCredential()
 
 
 def get_gcp_token():

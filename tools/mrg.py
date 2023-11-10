@@ -1,5 +1,5 @@
 """
-Simple tool for creating a Terra development MRG deployment
+Utility for creating a Terra development MRG deployment
 """
 
 import argparse
@@ -12,7 +12,9 @@ import requests
 from utils import auth, poll, cli
 from utils.conf import Configuration
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s", stream=sys.stdout)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(message)s", stream=sys.stdout
+)
 
 MRG_NOT_READY_STATES = ["Accepted", "Creating"]
 MRG_FAILED_STATES = ["Failed", "Deleted", "Deleting"]
@@ -20,12 +22,12 @@ MRG_READY_STATES = ["Succeeded", "Running", "Ready"]
 
 
 def deploy_managed_application(
-        subscription_id: str,
-        deployment_name: str,
-        resource_group: str,
-        authorized_terra_users: list[str],
-        plan: str,
-        location: str = "southcentralus",
+    subscription_id: str,
+    deployment_name: str,
+    resource_group: str,
+    authorized_terra_users: list[str],
+    plan: str,
+    location: str = "southcentralus",
 ):
     access_token = auth.get_azure_access_token()
     body = {
@@ -74,7 +76,9 @@ def deploy_managed_application(
     return result.json()
 
 
-def delete_managed_application(subscription_id: str, deployment_name: str, resource_group: str):
+def delete_managed_application(
+    subscription_id: str, deployment_name: str, resource_group: str
+):
     access_token = auth.get_azure_access_token()
     url = f"https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Solutions/applications/{deployment_name}?api-version=2019-07-01"
     headers = {
@@ -93,9 +97,7 @@ def delete_managed_application(subscription_id: str, deployment_name: str, resou
 
 def _delete_mrg_cmd(args):
     delete_managed_application(
-        args.subscription_id,
-        args.deployment_name,
-        args.resource_group
+        args.subscription_id, args.deployment_name, args.resource_group
     )
 
 
@@ -121,7 +123,9 @@ if __name__ == "__main__":
     create_subparser.add_argument("-s", "--subscription_id", required=True)
     create_subparser.add_argument("-r", "--resource_group", required=True)
     create_subparser.add_argument("-u", "--users", nargs="+", required=True)
-    create_subparser.add_argument("-l", "--location", required=False, default="southcentralus")
+    create_subparser.add_argument(
+        "-l", "--location", required=False, default="southcentralus"
+    )
     create_subparser.set_defaults(func=_mrg_cmd)
 
     delete_subparser = subparsers.add_parser("delete")
