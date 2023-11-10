@@ -1,4 +1,6 @@
 import argparse
+from argparse import Namespace
+from typing import Tuple
 
 from utils import auth
 from utils.conf import TerraEnvs, Configuration
@@ -10,14 +12,18 @@ def setup_parser_terra_env_args(parser: argparse.ArgumentParser):
     """
 
     parser.add_argument(
-        "-e", "--env", choices=Configuration.get_environments(), required=True, type=str.lower
+        "-e",
+        "--env",
+        choices=Configuration.get_environments(),
+        required=True,
+        type=str.lower,
     )
     parser.add_argument("-b", "--bee", required=False)
 
 
 def parse_args_and_init_config(
-        parser: argparse.ArgumentParser,
-) -> (dict, argparse.ArgumentParser):
+    parser: argparse.ArgumentParser,
+) -> Namespace:
     """
     Parses args and initializes config from the supplied argument parser. Assumes
     an "env" arg on the command line. If the env is "bee", enforces the presence of "bee" arg as well for runtime
@@ -29,7 +35,7 @@ def parse_args_and_init_config(
 
     args = parser.parse_args()
 
-    if 'user_token' in args and args.user_token is not None:
+    if "user_token" in args and args.user_token is not None:
         auth.USER_TOKEN = args.user_token
 
     if args.env == TerraEnvs.BEE and args.bee is None:
