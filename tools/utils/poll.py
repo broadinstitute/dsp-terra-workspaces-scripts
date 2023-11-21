@@ -1,13 +1,16 @@
 import logging
 import sys
 import time
+from typing import Any
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s", stream=sys.stdout)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(message)s", stream=sys.stdout
+)
 
 
 def poll_predicate(
     name: str, max_wait_time_seconds: int, poll_interval_seconds: int, poll_fn
-) -> (any, any):
+) -> tuple[Any, Any]:
     """
     Polls on the given polling fn for max_wait_time_seconds, every poll_interval_seconds, until the job is reported
     completed or we time out.
