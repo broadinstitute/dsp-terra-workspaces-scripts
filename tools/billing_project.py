@@ -202,6 +202,7 @@ def _add_users_cmd(args):
         args.billing_project_name,
         emails,
         invite_users_not_found=args.invite_users_not_found,
+        role=args.role
     )
 
 
@@ -245,6 +246,7 @@ if __name__ == "__main__":
     add_users_subparser = subparsers.add_parser("add_users")
     add_users_subparser.add_argument("-bp", "--billing_project_name", required=True)
     add_users_subparser.add_argument("-f", "--users_file", required=True)
+    add_users_subparser.add_argument("-r", "--role", required=False, default="User")
     add_users_subparser.add_argument(
         "-i",
         "--invite_users_not_found",
