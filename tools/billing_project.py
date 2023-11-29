@@ -26,6 +26,7 @@ def create_billing_project(
     authorized_terra_users: list[str],
     tenant_id: str,
     protected_data: bool,
+    location: str = "southcentralus"
 ):
     mrg.deploy_managed_application(
         subscription_id,
@@ -33,6 +34,7 @@ def create_billing_project(
         resource_group,
         authorized_terra_users,
         Configuration.get_config()["plan"],
+        location
     )
 
     body = {
@@ -149,6 +151,7 @@ def _create_billing_project_cmd(args):
         args.users,
         args.tenant_id,
         args.protected_data,
+        args.location
     )
 
 
@@ -233,6 +236,9 @@ if __name__ == "__main__":
     create_subparser.add_argument("-bp", "--billing_project_name", required=True)
     create_subparser.add_argument(
         "-p", "--protected_data", required=False, default=False, action="store_true"
+    )
+    create_subparser.add_argument(
+        "-l", "--location", required=False, default="southcentralus"
     )
     create_subparser.set_defaults(func=_create_billing_project_cmd)
 
