@@ -93,9 +93,9 @@ def create_lz_e2e(
     subscription_id: str,
     resource_group: str,
     authed_user: str,
-    env: str,
     definition: str,
     lz_prefix: str = "test",
+    location: str = "southcentralus",
 ):
     bpm_host = Configuration.get_config()["bpm_host"]
     lz_host = Configuration.get_config()["lz_host"]
@@ -110,6 +110,7 @@ def create_lz_e2e(
         resource_group,
         [authed_user],
         Configuration.get_config()["plan"],
+        location,
     )
 
     def bpm_poller():
@@ -207,9 +208,9 @@ def _e2e_cmd(args):
         args.subscription_id,
         args.resource_group,
         args.authed_user,
-        args.env,
         DEFINITIONS[args.definition],
         args.lz_prefix,
+        args.location,
     )
 
 
@@ -230,8 +231,8 @@ if __name__ == "__main__":
 
     create_subparser = subparsers.add_parser("create")
     create_subparser.set_defaults(func=_lz_create_cmd)
-    create_subparser.add_argument("-b", "--billing_profile_id")
-    create_subparser.add_argument("-d", "--definition")
+    create_subparser.add_argument("-b", "--billing_profile_id", required=True)
+    create_subparser.add_argument("-d", "--definition", required=True)
 
     create_job_status_subparser = subparsers.add_parser("create_job_status")
     create_job_status_subparser.set_defaults(func=_create_job_status_cmd)
@@ -243,6 +244,9 @@ if __name__ == "__main__":
     e2e_subparser.add_argument("-u", "--authed_user", required=True)
     e2e_subparser.add_argument("-d", "--definition", required=True)
     e2e_subparser.add_argument("-p", "--lz_prefix", required=False, default="test")
+    e2e_subparser.add_argument(
+        "-l", "--location", required=False, default="southcentralus"
+    )
     e2e_subparser.set_defaults(func=_e2e_cmd)
 
     inspect_subparser = subparsers.add_parser("inspect")
