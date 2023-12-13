@@ -38,7 +38,7 @@ def create_landing_zone(lz_host: str, billing_profile_id: str, definition: str):
     :param billing_profile_id: ID of the billing profile which will hold the landing zone resources
     :param definition:  Type of landing zone to deploy, must be one of DEFINITIONS
     """
-
+    job_control = {"id": f"{uuid.uuid4()}"}
     body = {
         "landingZoneId": f"{uuid.uuid4()}",
         "definition": definition,
@@ -55,13 +55,13 @@ def create_landing_zone(lz_host: str, billing_profile_id: str, definition: str):
             {"key": "AKS_MACHINE_TYPE", "value": "Standard_D4as_v5"},
         ],
         "billingProfileId": billing_profile_id,
-        "jobControl": {"id": f"{uuid.uuid4()}"},
+        "jobControl": job_control,
     }
 
     url = f"{lz_host}/api/landingzones/v1/azure"
 
     logging.info(
-        f"Creating landing zone..[landing_zone_id={body['landingZoneId']}, job_control_id={body['jobControl']['id']}]"
+        f"Creating landing zone..[landing_zone_id={body['landingZoneId']}, job_control_id={job_control['id']}]"
     )
 
     result = requests.post(

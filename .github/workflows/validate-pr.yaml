@@ -1,0 +1,32 @@
+# This workflow will install Python dependencies and validate static type checking w/mypy
+
+name: Validate PR
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  python-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.7.1
+          virtualenvs-create: false
+          virtualenvs-in-project: false
+          installer-parallel: true
+      - name: Install dependencies
+        working-directory: ./tools
+        run: poetry install
+        shell: bash
+      - name: Check static types
+        run: poetry run mypy .
+        working-directory: ./tools
