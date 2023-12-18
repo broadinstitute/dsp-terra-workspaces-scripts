@@ -26,7 +26,7 @@ def create_billing_project(
     authorized_terra_users: list[str],
     tenant_id: str,
     protected_data: bool,
-    location: str = "southcentralus"
+    location: str = "southcentralus",
 ):
     mrg.deploy_managed_application(
         subscription_id,
@@ -34,7 +34,7 @@ def create_billing_project(
         resource_group,
         authorized_terra_users,
         Configuration.get_config()["plan"],
-        location
+        location,
     )
 
     body = {
@@ -151,7 +151,7 @@ def _create_billing_project_cmd(args):
         args.users,
         args.tenant_id,
         args.protected_data,
-        args.location
+        args.location,
     )
 
 
@@ -205,7 +205,7 @@ def _add_users_cmd(args):
         args.billing_project_name,
         emails,
         invite_users_not_found=args.invite_users_not_found,
-        role=args.role
+        role=args.role,
     )
 
 
