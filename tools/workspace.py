@@ -100,6 +100,8 @@ def delete_workspace(workspace_name: str, billing_project_name: str):
 
         if "workspace" not in raw_status.json():
             logging.info(raw_status.json())
+            raise Exception("Invalid workspace response")
+
         status = raw_status.json()["workspace"]["state"]
         if status in ["Deleting"]:
             return False, status
