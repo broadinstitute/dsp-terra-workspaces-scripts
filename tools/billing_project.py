@@ -184,7 +184,7 @@ def delete_billing_project(billing_project_name: str):
 
         return False, status
 
-    poll.poll_predicate("Billing project deletion", 1200, 5, _billing_deletion_poller)
+    poll.poll_predicate("Billing project deletion", 7200, 5, _billing_deletion_poller)
 
     logging.info("Deleted billing project")
 
