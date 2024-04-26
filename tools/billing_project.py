@@ -13,6 +13,7 @@ import csv
 import mrg
 from utils import auth, poll, cli
 from utils.conf import Configuration
+from utils.http import is_response_5xx
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(message)s", stream=sys.stdout
@@ -61,9 +62,16 @@ def create_billing_project(
         bp_result = requests.get(
             polling_url, headers=auth.build_auth_headers(auth.get_gcp_token())
         )
-        bp_result.raise_for_status()
-        data = bp_result.json()
+        try:
+            bp_result.raise_for_status()
+        except HTTPError as e:
+            if is_response_5xx(e.response):
+                logging.warning(f"{e.response.status_code} from rawls, retrying")
+                return False, None
+            else:
+                raise e
 
+        data = bp_result.json()
         status = data["status"]
         if status == "CreatingLandingZone":
             return False, data
@@ -174,6 +182,9 @@ def delete_billing_project(billing_project_name: str):
         except HTTPError as e:
             if e.response.status_code == 404:
                 return True, None
+            elif is_response_5xx(e.response):
+                logging.warning(f"{e.response.status_code} from rawls, retrying")
+                return False, None
             raise e
 
         status = raw_status.json()["status"]

@@ -11,3 +11,7 @@ def get_session_with_retry() -> requests.Session:
     session = requests.Session()
     session.mount("https://", HTTPAdapter(max_retries=basic_http_retry()))
     return session
+
+
+def is_response_5xx(response: requests.Response) -> bool:
+    return response.status_code / 100 == 5
