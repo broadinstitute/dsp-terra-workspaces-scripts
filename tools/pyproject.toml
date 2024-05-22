@@ -15,7 +15,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-requests = "^2.31.0"
+requests = "^2.32.0"
 azure-core = "^1.27.0"
 azure-identity = "^1.14.0"
 google-auth = "^2.19.1"
