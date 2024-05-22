@@ -20,6 +20,10 @@ logging.basicConfig(
 )
 
 
+class BillingProjectException(Exception):
+    pass
+
+
 def create_billing_project(
     billing_project_name: str,
     subscription_id: str,
@@ -73,6 +77,7 @@ def create_billing_project(
 
         data = bp_result.json()
         status = data["status"]
+        message = data.get("message")
         if status == "CreatingLandingZone":
             return False, data
         elif status == "Creating":
@@ -80,9 +85,13 @@ def create_billing_project(
         elif status == "Ready":
             return True, data
         else:
-            raise Exception(f"Error creating billing project => {status}")
+            raise BillingProjectException(
+                f"Error creating billing project => {status}, message = {message}"
+            )
 
-    poll.poll_predicate("Billing project creation", 1800, 5, bp_poller)
+    poll.poll_predicate(
+        f"Billing project creation (name={billing_project_name})", 1800, 5, bp_poller
+    )
 
 
 def add_users(
@@ -107,7 +116,7 @@ def add_users(
 
     data = result.json()
     if data["status"] != "Ready":
-        raise Exception(
+        raise BillingProjectException(
             f"Billing project {billing_project_name} is not ready, status = {data['status']}"
         )
 
@@ -152,15 +161,19 @@ def _get_rawls_billing_url():
 
 
 def _create_billing_project_cmd(args):
-    create_billing_project(
-        args.billing_project_name,
-        args.subscription_id,
-        args.resource_group,
-        args.users,
-        args.tenant_id,
-        args.protected_data,
-        args.location,
-    )
+    try:
+        create_billing_project(
+            args.billing_project_name,
+            args.subscription_id,
+            args.resource_group,
+            args.users,
+            args.tenant_id,
+            args.protected_data,
+            args.location,
+        )
+    except BillingProjectException as e:
+        logging.error(e)
+        sys.exit(1)
 
 
 def delete_billing_project(billing_project_name: str):
@@ -187,21 +200,32 @@ def delete_billing_project(billing_project_name: str):
                 return False, None
             raise e
 
-        status = raw_status.json()["status"]
+        data = raw_status.json()
+        status = data["status"]
+        message = data.get("message")
         if status in ["DeletionFailed"]:
-            raise Exception(
-                f"Billing project deletion failed, billing project status = {status}"
+            raise BillingProjectException(
+                f"Billing project deletion failed, billing project status = {status}, message = {message}"
             )
 
         return False, status
 
-    poll.poll_predicate("Billing project deletion", 7200, 5, _billing_deletion_poller)
+    poll.poll_predicate(
+        f"Billing project deletion (name={billing_project_name})",
+        7200,
+        5,
+        _billing_deletion_poller,
+    )
 
     logging.info("Deleted billing project")
 
 
 def _delete_billing_project_cmd(args):
-    delete_billing_project(args.billing_project_name)
+    try:
+        delete_billing_project(args.billing_project_name)
+    except BillingProjectException as e:
+        logging.error(e)
+        sys.exit(1)
 
 
 def _list_billing_projects_cmd(args):
