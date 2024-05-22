@@ -77,7 +77,7 @@ def create_billing_project(
 
         data = bp_result.json()
         status = data["status"]
-        message = data["message"]
+        message = data.get("message")
         if status == "CreatingLandingZone":
             return False, data
         elif status == "Creating":
@@ -202,7 +202,7 @@ def delete_billing_project(billing_project_name: str):
 
         data = raw_status.json()
         status = data["status"]
-        message = data["message"]
+        message = data.get("message")
         if status in ["DeletionFailed"]:
             raise BillingProjectException(
                 f"Billing project deletion failed, billing project status = {status}, message = {message}"
